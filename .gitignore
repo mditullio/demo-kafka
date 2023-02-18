@@ -1,0 +1,3 @@
+TestKafkaClient/**/bin/*
+TestKafkaClient/**/obj/*
+TestKafkaClient/.vs
