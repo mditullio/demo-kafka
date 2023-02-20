@@ -7,25 +7,49 @@ using Newtonsoft.Json;
 using Confluent.SchemaRegistry.Serdes;
 using Confluent.SchemaRegistry;
 using Confluent.Kafka.SyncOverAsync;
+using NJsonSchema.Generation;
 
 class Producer
 {
     static void Main(string[] args)
     {
-        ProducerConfig configuration = new ProducerConfig()
+        ProducerConfig producerConfig = new ProducerConfig()
         {
             BootstrapServers = "127.0.0.1:9092",
         };
 
+        JsonSerializerConfig serializerConfig = new JsonSerializerConfig()
+        {
+            AutoRegisterSchemas = true,            
+        };
+
+        JsonSchemaGeneratorSettings jsonSchemaGeneratorSettings = new JsonSchemaGeneratorSettings()
+        {
+        };
+
         const string topic = Purchase.TOPIC_NAME;
 
-        string[] users = { "eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther" };
-        string[] items = { "book", "alarm clock", "t-shirts", "gift card", "batteries" };
-        double[] amounts = { 20.0, 15.0, 15.0, 100.0, 5.0 };
+        string[] users = { 
+            "Marco", 
+            "Daniel", 
+            "Jérome", 
+            "Cédric",
+            "Mamadou",
+            "Olivier", 
+            "Pascal" 
+        };
 
+        Item[] items = new Item[] {
+            new Item("Book", 20.0),
+            new Item("Alarm clock", 15.0),
+            new Item("T-shirt", 15.0),
+            new Item("Gift card", 100.0),
+            new Item("Batteries AA", 5.0)
+        };
+        
         using (var schemaRegistryClient = new CachedSchemaRegistryClient(new SchemaRegistryConfig() { Url = "127.0.0.1:8081" }))
-        using (var producer = new ProducerBuilder<string, Purchase>(configuration)
-            .SetValueSerializer(new JsonSerializer<Purchase>(schemaRegistryClient).AsSyncOverAsync())
+        using (var producer = new ProducerBuilder<string, Purchase>(producerConfig)
+            .SetValueSerializer(new JsonSerializer<Purchase>(schemaRegistryClient, serializerConfig, jsonSchemaGeneratorSettings).AsSyncOverAsync())
             .Build())
         {
             var numProduced = 0;
@@ -33,15 +57,17 @@ class Producer
             const int numMessages = 10;
             for (int i = 0; i < numMessages; ++i)
             {
-                var purchase = new Purchase();
-                purchase.UserId = users[rnd.Next(users.Length)];
+                var purchase = new Purchase
+                {
+                    UserId = users[rnd.Next(users.Length)]
+                };
 
                 for (int j = 0; j < 3; j++)
                 {
-                    var next = rnd.Next(items.Length);
-                    purchase.Items.Add(items[next]);
-                    purchase.Amount += amounts[next];
+                    purchase.Items.Add(items[rnd.Next(items.Length)]);
                 }
+
+                purchase.Amount = purchase.Items.Sum(item => item.Price);
 
                 producer.Produce(topic, new Message<string, Purchase> { Key = purchase.UserId, Value = purchase },
                     (deliveryReport) =>
@@ -52,14 +78,19 @@ class Producer
                         }
                         else
                         {
-                            Console.WriteLine($"Produced event to topic {topic}: key = {purchase.UserId,-10} value = {purchase}");
+                            Console.WriteLine($"Produced event to topic {topic}:" + Environment.NewLine +
+                                $" - key = {purchase.UserId,-10}" + Environment.NewLine +
+                                $" - value = {purchase}" + Environment.NewLine);
+
                             numProduced += 1;
                         }
                     });
+
+                producer.Flush();
             }
 
             producer.Flush(TimeSpan.FromSeconds(10));
-            Console.WriteLine($"{numProduced} messages were produced to topic {topic}");
+            Console.WriteLine($"{numProduced} messages were produced to topic {topic}" + Environment.NewLine);
         }
     }
 }

@@ -9,17 +9,17 @@ namespace Events
 
         public string UserId { get; set; }
 
-        public List<string> Items { get; set; } 
+        public List<Item> Items { get; set; } 
 
         public double Amount { get; set; }
 
         public Purchase()
         {
             UserId = string.Empty;
-            Items = new List<string>();
+            Items = new List<Item>();
         }
 
-        public Purchase(string userId, List<string> items, double amount)
+        public Purchase(string userId, List<Item> items, double amount)
         {
             UserId = userId;
             Items = items;

@@ -32,6 +32,7 @@ class Consumer
             .SetValueDeserializer(new JsonDeserializer<Purchase>().AsSyncOverAsync())
             .Build())
         {
+            var numConsumed = 0;
             consumer.Subscribe(topic);
             try
             {
@@ -40,7 +41,9 @@ class Consumer
                     try
                     {
                         var cr = consumer.Consume(cts.Token);
-                        Console.WriteLine($"Consumed event from topic {topic} with key {cr.Message.Key,-10} and value {cr.Message.Value}");
+                        Console.WriteLine($"Consumed event from topic {topic}" + Environment.NewLine +
+                            $" - key {cr.Message.Key,-10}" + Environment.NewLine +
+                            $" - value {cr.Message.Value}" + Environment.NewLine);
                     }
                     catch (ConsumeException exc)
                     {
@@ -48,7 +51,15 @@ class Consumer
                         { 
                             exc.ConsumerRecord.TopicPartitionOffset
                         });
-                        Console.WriteLine($"Topic partition offset ${exc.ConsumerRecord.TopicPartitionOffset} skipped because of an error");
+                        Console.WriteLine($"WARNING: Topic partition offset ${exc.ConsumerRecord.TopicPartitionOffset} skipped because of an error");
+                    }
+
+                    consumer.Commit();
+                    numConsumed++;
+
+                    if (numConsumed % 5 == 0)
+                    {
+                        Console.WriteLine($"{numConsumed} messages were consumed from topic {topic}");
                     }
                 }
             }
