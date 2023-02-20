@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopicCreator", "TopicCreator\TopicCreator.csproj", "{F7CE6D1E-27C5-4C5C-8876-33638C679582}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopicCreator", "TopicCreator\TopicCreator.csproj", "{F7CE6D1E-27C5-4C5C-8876-33638C679582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Producer", "Producer\Producer.csproj", "{62852511-1B78-49CB-9388-E053A37AC378}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Producer", "Producer\Producer.csproj", "{62852511-1B78-49CB-9388-E053A37AC378}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer", "Consumer\Consumer.csproj", "{89A49922-0E19-4C89-9AE0-FFFA5D342FD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Consumer", "Consumer\Consumer.csproj", "{89A49922-0E19-4C89-9AE0-FFFA5D342FD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events", "Events\Events.csproj", "{2DBE3F18-CCC4-4E7C-B0F1-64DBDFFC37F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events", "Events\Events.csproj", "{2DBE3F18-CCC4-4E7C-B0F1-64DBDFFC37F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

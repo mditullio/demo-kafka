@@ -4,6 +4,9 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Events;
 using Newtonsoft.Json;
+using Confluent.SchemaRegistry.Serdes;
+using Confluent.SchemaRegistry;
+using Confluent.Kafka.SyncOverAsync;
 
 class Producer
 {
@@ -14,14 +17,15 @@ class Producer
             BootstrapServers = "127.0.0.1:9092",
         };
 
-        const string topic = "purchases";
+        const string topic = Purchase.TOPIC_NAME;
 
         string[] users = { "eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther" };
         string[] items = { "book", "alarm clock", "t-shirts", "gift card", "batteries" };
         double[] amounts = { 20.0, 15.0, 15.0, 100.0, 5.0 };
 
+        using (var schemaRegistryClient = new CachedSchemaRegistryClient(new SchemaRegistryConfig() { Url = "127.0.0.1:8081" }))
         using (var producer = new ProducerBuilder<string, Purchase>(configuration)
-            .SetValueSerializer(new PurchaseSerializer())
+            .SetValueSerializer(new JsonSerializer<Purchase>(schemaRegistryClient).AsSyncOverAsync())
             .Build())
         {
             var numProduced = 0;

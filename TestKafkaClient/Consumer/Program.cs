@@ -3,6 +3,8 @@ using System;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Events;
+using Confluent.SchemaRegistry.Serdes;
+using Confluent.Kafka.SyncOverAsync;
 
 class Consumer
 {
@@ -17,7 +19,7 @@ class Consumer
         };
 
 
-        const string topic = "purchases";
+        const string topic = Purchase.TOPIC_NAME;
 
         CancellationTokenSource cts = new CancellationTokenSource();
         Console.CancelKeyPress += (_, e) =>
@@ -27,7 +29,7 @@ class Consumer
         };
 
         using (var consumer = new ConsumerBuilder<string, Purchase>(configuration)
-            .SetValueDeserializer(new PurchaseSerializer())
+            .SetValueDeserializer(new JsonDeserializer<Purchase>().AsSyncOverAsync())
             .Build())
         {
             consumer.Subscribe(topic);
