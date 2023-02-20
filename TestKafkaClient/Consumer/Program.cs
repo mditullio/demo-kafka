@@ -59,7 +59,7 @@ class Consumer
 
                     if (numConsumed % 5 == 0)
                     {
-                        Console.WriteLine($"{numConsumed} messages were consumed from topic {topic}");
+                        Console.WriteLine($"{numConsumed} messages were consumed from topic {topic}" + Environment.NewLine);
                     }
                 }
             }
